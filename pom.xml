@@ -62,7 +62,8 @@
             <version>1.0.0-wso2v2</version>
         </dependency>
 
-	<!-- below 3 is needed for ESB proxy admin -->
+
+        <!-- below 3 is needed for ESB proxy admin -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <version>4.2.1</version>

@@ -1,0 +1,5 @@
+<man:request domain="%1$s" xmlns:man="http://www.datapower.com/schemas/management">
+	<man:do-action>
+		<SaveConfig/>
+	</man:do-action>
+</man:request>

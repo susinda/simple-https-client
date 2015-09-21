@@ -3,7 +3,7 @@ package org.wso2.demo.clients;
 import java.io.File;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
-import org.apache.axis2.AxisFault;
+import org.apache.axiom.util.base64.Base64Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -14,24 +14,15 @@ public class ServiceTest {
 
     public static void main(String[] args) throws Exception {
         setKeyStores();
-        String endpoint = "https://xx.xx.67.66:5550/service/mgmt/current";
-        String payload = "<man:request domain=\"WSO2\" xmlns:man=\"http://www.datapower.com/schemas/management\">" +
-                "<man:get-file name=\"config://WSO2.cfg\"/>" +
-                "</man:request>";
-        OMElement pauloadElement = AXIOMUtil.stringToOM(payload);
-        System.out.println("pauloadElement : " + pauloadElement.toString());
 
-        AxisServiceClient axisServiceClient = new AxisServiceClient();
-        OMElement response = null;
-        try {
-            response = axisServiceClient.sendReceiveWithBasicAuth(pauloadElement, endpoint, "xxxxxx", "xxxxxxxx");
-        } catch (AxisFault e) {
-            log.error("axisServiceClient.sendReceive failed " + e.getMessage());
-            System.out.println("axisServiceClient.sendReceive failed " + e.getMessage());
-        }
-        log.info("Response : " + response);
+        String endpoint = "https://xx.150.67.xx:5550/service/mgmt/current";
+        DataPowerClient dpClient = new DataPowerClient("xxxx", "xxxx", endpoint, "WSO2");
+        String content = "dummy content";
+        String encodedString = Base64Utils.encode(content.getBytes());
+        String response = dpClient.setFile("local://nuwan4.txt", encodedString );
         System.out.println("Response : " + response);
     }
+
 
     private static void addProxy() {
         ProxyServiceAdminClient proxyServiceAdminClient = null;
@@ -75,7 +66,7 @@ public class ServiceTest {
             System.setProperty("javax.net.ssl.trustStore",
                     getKeyStorePath("wso2carbon.jks"));
         } catch (Exception e) {
-            log.error("Exception occured when setting keystore " + e.getMessage());
+            log.error("Exception occurred when setting key-store " + e.getMessage());
         }
 
         System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
@@ -86,7 +77,7 @@ public class ServiceTest {
                 + File.separator + "src" + File.separator + "main"
                 + File.separator + "resources" + File.separator + keyStoreName);
         if (!file.exists()) {
-            throw new Exception("Key Store file can not be found in "
+            throw new Exception("Key-Store file can not be found in "
                     + file.getCanonicalPath());
         }
         return file.getCanonicalPath();

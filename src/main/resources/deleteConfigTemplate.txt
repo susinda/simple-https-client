@@ -1,0 +1,7 @@
+<man:request domain="%1$s" xmlns:man="http://www.datapower.com/schemas/management">
+	<man:del-config>
+		<%2$s name="%3$s"/>
+	</man:del-config>
+</man:request>
+
+

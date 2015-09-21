@@ -1,0 +1,3 @@
+<man:request domain="%1$s" xmlns:man="http://www.datapower.com/schemas/management">
+	<man:set-file name="%2$s">%3$s</man:set-file>
+</man:request>

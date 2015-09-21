@@ -1,0 +1,7 @@
+<man:request domain="%1$s" xmlns:man="http://www.datapower.com/schemas/management">
+	<man:do-action>
+		<DeleteFile>
+			<File>%2$s</File>
+		</DeleteFile>
+	</man:do-action>
+</man:request>

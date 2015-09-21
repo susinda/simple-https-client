@@ -55,7 +55,6 @@ public class AxisServiceClient {
         OMElement response = null;
         if (log.isDebugEnabled()) {
             log.debug("Service Endpoint : " + endPointReference);
-            //log.debug("Service Operation : " + operation);
             log.debug("Payload : " + payload);
         }
         try {

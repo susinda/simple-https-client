@@ -22,6 +22,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -36,6 +37,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import sun.org.mozilla.javascript.internal.json.JsonParser;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -335,6 +337,29 @@ public class DataPowerClient {
         }
 
         return tokenResponse;
+    }
+
+
+    public String httpGet(String tokenEndpoint, int port, String accessToken) {
+
+        String resourceResponse = null;
+        try {
+            HttpClient httpclient = getHttpClient(port, "https", false);
+            HttpGet httpGet = new HttpGet(tokenEndpoint);
+            httpGet.addHeader("Authorization", "Bearer " + accessToken);
+            HttpResponse response = httpclient.execute(httpGet); // the client executes the request and gets a response
+            int responseCode = response.getStatusLine().getStatusCode();
+            System.out.print("responseCode " + responseCode);
+            HttpEntity tokEntity = response.getEntity();
+            String responseStr = EntityUtils.toString(tokEntity);
+            JSONObject obj = new JSONObject(responseStr);
+            resourceResponse = obj.toString();
+        } catch (IOException ex) {
+            // handle exception
+        } catch (JSONException e) {
+            log.error("Error while parsing response from token api", e);
+        }
+        return resourceResponse;
     }
 
 

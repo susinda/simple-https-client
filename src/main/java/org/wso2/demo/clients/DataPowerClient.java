@@ -29,6 +29,8 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -348,6 +350,30 @@ public class DataPowerClient {
             HttpGet httpGet = new HttpGet(tokenEndpoint);
             httpGet.addHeader("Authorization", "Bearer " + accessToken);
             HttpResponse response = httpclient.execute(httpGet); // the client executes the request and gets a response
+            int responseCode = response.getStatusLine().getStatusCode();
+            System.out.print("responseCode " + responseCode);
+            HttpEntity tokEntity = response.getEntity();
+            String responseStr = EntityUtils.toString(tokEntity);
+            JSONObject obj = new JSONObject(responseStr);
+            resourceResponse = obj.toString();
+        } catch (IOException ex) {
+            // handle exception
+        } catch (JSONException e) {
+            log.error("Error while parsing response from token api", e);
+        }
+        return resourceResponse;
+    }
+
+    public String httpPOST(String endpoint, int port, String accessToken, String payload) {
+
+        String resourceResponse = null;
+        try {
+            HttpClient httpclient = getHttpClient(port, "https", false);
+            HttpPost post = new HttpPost(endpoint);
+            post.addHeader("Authorization", "Bearer " + accessToken);
+            HttpEntity entity = new StringEntity(payload);
+            post.setEntity(entity);
+            HttpResponse response = httpclient.execute(post); // the client executes the request and gets a response
             int responseCode = response.getStatusLine().getStatusCode();
             System.out.print("responseCode " + responseCode);
             HttpEntity tokEntity = response.getEntity();

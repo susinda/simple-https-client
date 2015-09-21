@@ -62,6 +62,13 @@
             <version>1.0.0-wso2v2</version>
         </dependency>
 
+        <!-- for http client (token access)-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.2.4</version>
+        </dependency>
+
 
         <!-- below 3 is needed for ESB proxy admin -->
         <dependency>

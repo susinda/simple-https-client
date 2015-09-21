@@ -1,6 +1,10 @@
 package org.wso2.demo.clients;
 
 import java.io.*;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -33,6 +37,9 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.stream.XMLStreamException;
 
 public class DataPowerClient {
@@ -296,7 +303,7 @@ public class DataPowerClient {
 
         try {
             //Generate New Access Token
-            HttpClient tokenEPClient = getHttpClient(port, "https");
+            HttpClient tokenEPClient = getHttpClient(port, "https", false);
             HttpPost httpTokpost = new HttpPost(tokenEndpoint);
             List<NameValuePair> tokParams = new ArrayList<NameValuePair>(4);
             tokParams.add(new BasicNameValuePair(OAUTH_GRANT_TYPE, GRANT_TYPE_VALUE));
@@ -308,18 +315,19 @@ public class DataPowerClient {
             HttpResponse tokResponse = tokenEPClient.execute(httpTokpost);
             HttpEntity tokEntity = tokResponse.getEntity();
 
-            if (tokResponse.getStatusLine().getStatusCode() != 200) {
-                throw new RuntimeException("Error occurred while calling token endpoint: HTTP error code : " +
-                        tokResponse.getStatusLine().getStatusCode());
-            } else {
+           //TODO NEED uncomment or decide a proper handling for status other than 200
+           // if (tokResponse.getStatusLine().getStatusCode() != 200) {
+           //     throw new RuntimeException("Error occurred while calling token endpoint: HTTP error code : " +
+           //             tokResponse.getStatusLine().getStatusCode());
+           // } else {
                 String responseStr = EntityUtils.toString(tokEntity);
                 JSONObject obj = new JSONObject(responseStr);
                 tokenResponse = obj.toString();
-            }
+            //}
         } catch (ClientProtocolException e) {
             log.error("Error while creating token - Invalid protocol used", e);
         } catch (UnsupportedEncodingException e) {
-            log.error("Error while preparing request for token/revoke APIs", e);
+            System.out.print("Error while preparing request for token/revoke APIs" + e.getMessage());
         } catch (IOException e) {
             log.error("Error while creating tokens - " + e.getMessage(), e);
         } catch (JSONException e) {
@@ -330,11 +338,47 @@ public class DataPowerClient {
     }
 
 
-    private HttpClient getHttpClient(int port, String protocol) {
+    private HttpClient getHttpClient(int port, String protocol, boolean insecure) {
         SchemeRegistry registry = new SchemeRegistry();
-        X509HostnameVerifier hostnameVerifier = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-        SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
-        socketFactory.setHostnameVerifier(hostnameVerifier);
+
+        SSLSocketFactory socketFactory = null;
+
+        if (insecure) {
+            SSLContext sslContext = null;
+            try {
+                sslContext = SSLContext.getInstance("SSL");
+                sslContext.init(null,
+                        new TrustManager[]{new X509TrustManager() {
+                            public X509Certificate[] getAcceptedIssuers() {
+
+                                return null;
+                            }
+
+                            public void checkClientTrusted(
+                                    X509Certificate[] certs, String authType) {
+
+                            }
+
+                            public void checkServerTrusted(
+                                    X509Certificate[] certs, String authType) {
+
+                            }
+                        }}, new SecureRandom());
+            } catch (KeyManagementException e) {
+                System.out.print("Error in http client init " + e.getMessage());
+            } catch (NoSuchAlgorithmException e) {
+                System.out.print("Error in http client init " + e.getMessage());
+            }
+
+            socketFactory = new SSLSocketFactory(sslContext,SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+        } else {
+            X509HostnameVerifier hostnameVerifier = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+            socketFactory = SSLSocketFactory.getSocketFactory();
+            socketFactory.setHostnameVerifier(hostnameVerifier);
+        }
+
+
         if ("https".equals(protocol)) {
             if (port >= 0) {
                 registry.register(new Scheme("https", port, socketFactory));

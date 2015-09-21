@@ -33,6 +33,40 @@ public class ServiceTest {
         System.out.println("Response : " + response);
     }
 
+    private static void addProxy() {
+        ProxyServiceAdminClient proxyServiceAdminClient = null;
+        try {
+            proxyServiceAdminClient = new ProxyServiceAdminClient("https://localhost:9443/services/", "admin", "admin");
+
+            if (proxyServiceAdminClient != null) {
+                String proxy = "<proxy xmlns=\"http://ws.apache.org/ns/synapse\"\n" +
+                        "       name=\"WSO2Test2\"\n" +
+                        "       transports=\"https,http\"\n" +
+                        "       statistics=\"disable\"\n" +
+                        "       trace=\"disable\"\n" +
+                        "       startOnLoad=\"true\">\n" +
+                        "   <target>\n" +
+                        "      <outSequence>\n" +
+                        "         <send/>\n" +
+                        "      </outSequence>\n" +
+                        "      <endpoint>\n" +
+                        "         <wsdl service=\"GlobalWeather\"\n" +
+                        "               port=\"GlobalWeatherSoap\"\n" +
+                        "               uri=\"http://www.webservicex.com/globalweather.asmx?WSDL\"/>\n" +
+                        "      </endpoint>\n" +
+                        "   </target>\n" +
+                        "   <publishWSDL uri=\"http://www.webservicex.com/globalweather.asmx?WSDL\"/>\n" +
+                        "   <description/>\n" +
+                        "</proxy>";
+                OMElement pauloadElement = AXIOMUtil.stringToOM(proxy);
+                proxyServiceAdminClient.addProxyService(proxy);
+            }
+        } catch (Exception e) {
+            System.out.println(" add proxy error " + e.getMessage());
+        }
+
+    }
+
 
     private static void setKeyStores() {
         // set trust store, you need to import server's certificate

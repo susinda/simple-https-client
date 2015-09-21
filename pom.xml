@@ -62,6 +62,25 @@
             <version>1.0.0-wso2v2</version>
         </dependency>
 
+	<!-- below 3 is needed for ESB proxy admin -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <version>4.2.1</version>
+            <artifactId>org.wso2.carbon.proxyadmin.stub</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-core</artifactId>
+            <version>2.1.2-wso2v4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

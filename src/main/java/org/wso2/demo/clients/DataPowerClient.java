@@ -29,7 +29,6 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -39,8 +38,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import sun.org.mozilla.javascript.internal.json.JsonParser;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -272,13 +269,29 @@ public class DataPowerClient {
 
 
     private static String getFileFromResources(String fileName) throws IOException {
+//        File file = new File((new File(".")).getCanonicalPath()
+//                + File.separator + "src" + File.separator + "main"
+//                + File.separator + "resources" + File.separator + fileName);
+
         File file = new File((new File(".")).getCanonicalPath()
-                + File.separator + "src" + File.separator + "main"
-                + File.separator + "resources" + File.separator + fileName);
+                + File.separator + "repository" + File.separator + "resources"
+                + File.separator + "templates" + File.separator + fileName);
+
+        log.info("file.getAbsolutePath()" + file.getAbsolutePath());
+        log.info("file.getCanonicalPath()" + file.getCanonicalPath());
+
         if (!file.exists()) {
             throw new IOException("File can not be found in " + file.getCanonicalPath());
         }
         return file.getCanonicalPath();
+    }
+
+    private String getTemplateFromFileNew(String fileName)  {
+        InputStream in = this.getClass().getResourceAsStream(fileName);
+        //String template = getStringFromInputStream(in);
+        //log.info("template " +template);
+        //return template;
+        return "";
     }
 
     private static final String getTemplateFromFile(String filePath){
@@ -290,10 +303,39 @@ public class DataPowerClient {
                 content = new Scanner(new File(absolutePath)).useDelimiter("\\Z").next();
             }
         } catch (IOException ioe) {
-            log.error("File " + filePath + "can not be found in resources");
+            log.error("File " + filePath + " can not be found in resources");
         }
         return content;
     }
+
+    private static String getStringFromInputStream1(InputStream is) {
+
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
 
 
     public String getNewAccessToken(String tokenEndpoint, int port, String clientID, String clientSecret, String scope) {

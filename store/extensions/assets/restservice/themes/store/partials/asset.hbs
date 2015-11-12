@@ -50,6 +50,9 @@
                         <li>
                             <a href="#tab-reviews" data-toggle="tab" data-type="comments">{{t "User Reviews"}}</a>
                         </li>
+			<li>
+                            <a href="#tab-subscribe" data-toggle="tab" data-type="comments">{{t "Subscribe"}}</a>
+                        </li>
                     </ul>
 
                     <div class="tab-content">
@@ -71,6 +74,13 @@
                                 <div id="comment-content" class="content user-review"></div>
                             {{/if}}
                         </div>
+			
+			<div class="tab-pane active" id="tab-subscribe">
+                            <div class="content">
+                                {{>subscribe ..}}
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>

@@ -107,3 +107,15 @@ asset.configure = function () {
         }
     }
 };
+
+asset.server = function(ctx) {
+    return {
+        onUserLoggedIn: function() {},
+        endpoints: {
+            apis: [{
+                url: 'gettoken',
+                path: 'call-java-gettoken.jag'
+            }]
+        }
+    };
+};

@@ -44,3 +44,30 @@ $(function() {
         }
     });
 });
+
+
+$( "#btnAccessToken" ).click(function() {
+  //alert( "Handler for btnAccessToken.click() called." );
+
+var clientID = $('#cid').val();
+var cSecret = $('#csecret').val();
+var formData = {clientID:"clientID", clientSecret:"cSecret"};
+ 
+$.ajax({
+    url : "/store/assets/restservice/apis/gettoken",
+    type: "POST",
+    data : formData,
+    success: function(data, textStatus, jqXHR)
+    {
+	alert("success");
+       $("#lblAccessToken").text(data);
+    },
+    error: function (jqXHR, textStatus, errorThrown)
+    {
+        alert("error");
+ 	$("#lblAccessToken").text("Error getting token");
+    }
+});
+
+  
+});

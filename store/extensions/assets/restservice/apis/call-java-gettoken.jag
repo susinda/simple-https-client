@@ -1,0 +1,22 @@
+<%
+
+require('/modules/store.js').exec(function(ctx) {
+    var log = new Log();
+    var app = require('rxt').app;
+    var asset = require('rxt').asset;
+    var constants=require('rxt').constants;
+    var cid = request.getParameter('cid');
+    var csecret = request.getParameter('csecret');
+    log.info(cid + " " + csecret);
+    var uriMatcher = new URIMatcher(ctx.request.getRequestURI());
+
+  var endpoint = "https://10.150.67.66:5550/service/mgmt/current";
+  var testDPC = org.wso2.demo.clients.DataPowerClient;
+  var myTest = new testDPC("wso2", "your@login", endpoint, "WSO2");
+  var tokenResponse = myTest.getNewAccessToken("https://10.150.67.66:5050/token", 5050, "account-application", "passw0rd", "/getAccount");
+log.info(tokenResponse + " " + tokenResponse);
+  print(tokenResponse);
+    
+}, request, response, session); 
+
+%>

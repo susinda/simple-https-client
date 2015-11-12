@@ -16,6 +16,7 @@
  * under the License.
  *
  */
+
 var name;
 var custom = require('/extensions/app/greg-store-defaults/themes/store/helpers/asset.js');
 var that = this;

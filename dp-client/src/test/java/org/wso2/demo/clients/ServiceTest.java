@@ -3,9 +3,9 @@ package org.wso2.demo.clients;
 import java.io.File;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
-import org.apache.axiom.util.base64.Base64Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jettison.json.JSONObject;
 
 
 public class ServiceTest {
@@ -15,12 +15,25 @@ public class ServiceTest {
     public static void main(String[] args) throws Exception {
         setKeyStores();
 
-        String endpoint = "https://xx.150.67.xx:5550/service/mgmt/current";
-        DataPowerClient dpClient = new DataPowerClient("xxxx", "xxxx", endpoint, "WSO2");
+        String endpoint = "https://xxxx:5550/service/mgmt/current";
+        DataPowerClient dpClient = new DataPowerClient("wso2", "xxxxx", endpoint, "WSO2");
         String content = "dummy content";
-        String encodedString = Base64Utils.encode(content.getBytes());
-        String response = dpClient.setFile("local://nuwan4.txt", encodedString );
+        //String encodedString = Base64Utils.encode(content.getBytes());
+        String response = dpClient.getFile("local://nuwan4.txt" );
         System.out.println("Response : " + response);
+
+        String response1 = dpClient.getNewAccessToken("https://xxxxxx:5050/token", 5050, "account-application", "xxxx", "/getAccount");
+        JSONObject obj = new JSONObject(response1);
+        String newAccessToken = obj.get("access_token").toString();
+        System.out.println("Response1 : " + response1);
+        System.out.println("newAccessToken : " + newAccessToken);
+
+        String response2 = dpClient.httpGet("https://10.150.67.66:5051/getAccount", 5051, newAccessToken);
+        System.out.println("Response2 : " + response2);
+
+        String res3 = dpClient.httpPOST("https://10.150.67.66:5051/getAccount", 5051, newAccessToken, "{\"location\":{\"lon\":\"80\", \"lat\":\"7\"}}");
+        System.out.println("res3 : " + res3);
+
     }
 
 
@@ -64,7 +77,7 @@ public class ServiceTest {
         System.setProperty("javax.net.ssl.trustStoreType", "JKS");
         try {
             System.setProperty("javax.net.ssl.trustStore",
-                    getKeyStorePath("wso2carbon.jks"));
+                    getKeyStorePath("client-truststore.jks"));
         } catch (Exception e) {
             log.error("Exception occurred when setting key-store " + e.getMessage());
         }

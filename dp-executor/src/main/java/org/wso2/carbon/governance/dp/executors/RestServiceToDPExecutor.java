@@ -34,7 +34,7 @@ public class RestServiceToDPExecutor implements Execution{
     private String dpUsername = null;
     private String dpPassword = null;
     private String dpDomain = null;
-    private String tempDirectoryPath = "/home/daneshk/Desktop/temp/";
+    private String tempDirectoryPath = "../tempDir/"; 
     private Registry registry;
     private DataPowerClient dpClient;
 
@@ -93,6 +93,7 @@ public class RestServiceToDPExecutor implements Execution{
     public boolean execute(RequestContext context, String currentState, String targetState) {
         Resource resource = context.getResource();
         try {
+            /*
             String resourceAbsolutePath = resource.getPath();
             String resourceRelativePath = resourceAbsolutePath.substring("/_system/governance".length());
             writeContentToFile(resource);
@@ -103,9 +104,17 @@ public class RestServiceToDPExecutor implements Execution{
                 Resource assocResource = registry.get(assoc.getDestinationPath());
                 writeContentToFile(assocResource);
                 pushContentToDP(dpClient, assocResource);
-            }
+            }*/
 
-        } catch (RegistryException e) {
+            String response1 = dpClient.getNewAccessToken("https://xxxxxxxx:5050/token", 5050, "account-application", "passw0rd", "/getAccount");
+            org.codehaus.jettison.json.JSONObject obj = new org.codehaus.jettison.json.JSONObject(response1);
+            String newAccessToken = obj.get("access_token").toString();
+            System.out.println("Response1 : " + response1);
+
+            String response2 = dpClient.httpGet("https://xxxxxxx:5051/getAccount", 5051, newAccessToken);
+            System.out.println("Response2 : " + response2);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
